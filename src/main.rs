@@ -5,7 +5,7 @@ use axum::{
 };
 use serde_json::Value;
 use tower::ServiceBuilder;
-use tower_http::decompression::RequestDecompressionLayer;
+use tower_http::{compression::CompressionLayer, decompression::RequestDecompressionLayer};
 
 #[tokio::main]
 async fn main() {
@@ -14,7 +14,8 @@ async fn main() {
             .layer(HandleErrorLayer::new(|_: BoxError| async move {
                 (StatusCode::INTERNAL_SERVER_ERROR, "Unhandled server error")
             }))
-            .layer(RequestDecompressionLayer::new()),
+            .layer(RequestDecompressionLayer::new())
+            .layer(CompressionLayer::new()),
     );
 
     let addr = std::net::SocketAddr::from_str(&format!("{}:{}", "127.0.0.1", 8000)).unwrap();
