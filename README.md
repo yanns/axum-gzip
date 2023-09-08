@@ -5,7 +5,7 @@ Curl command:
 curl -v -g 'http://localhost:8000/' \
     -H "Content-Type: application/json" \
     -H "Content-Encoding: gzip" \
-    --data-binary @data/products.json.zip
+    --data-binary @data/products.json.gz
 ```
 
 Response:
