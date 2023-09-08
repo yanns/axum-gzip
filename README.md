@@ -16,18 +16,17 @@ Response:
 > Host: localhost:8000
 > User-Agent: curl/8.1.2
 > Accept: */*
-> authorization: Bearer 1234
 > Content-Type: application/json
 > Content-Encoding: gzip
-> Content-Length: 559
+> Content-Length: 99
 >
-< HTTP/1.1 400 Bad Request
-< content-type: text/plain; charset=utf-8
-< content-length: 54
-< date: Wed, 30 Aug 2023 11:43:02 GMT
+< HTTP/1.1 200 OK
+< content-type: application/json
+< content-length: 70
+< date: Fri, 08 Sep 2023 11:25:12 GMT
 <
 * Connection #0 to host localhost left intact
-Failed to buffer the request body: Invalid gzip header%
+{"products":[{"id":1,"name":"Product 1"},{"id":2,"name":"Product 2"}]}
 ```
 
 non-gzip
