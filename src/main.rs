@@ -32,8 +32,10 @@ async fn main() {
 fn make_other_router<B>() -> Router<(), B>
 where
     B: axum::body::HttpBody + Send + 'static,
+    B::Data: Send,
+    B::Error: Into<BoxError>,
 {
-    Router::new().route("/test", post(|| async {}))
+    Router::new().route("/test", post(root))
 }
 
 async fn root(Json(value): Json<Value>) -> Json<Value> {
