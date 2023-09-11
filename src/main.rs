@@ -9,11 +9,10 @@ use tower_http::{compression::CompressionLayer, decompression::RequestDecompress
 
 #[tokio::main]
 async fn main() {
-    let otherRouter: Router = Router::new().route("/test", post(root));
+    let other_router = make_other_router();
     let app: Router = Router::new()
         .route("/", post(root))
-        // uncomment for compilation error
-        // .merge(otherRouter)
+        .merge(other_router)
         .layer(
             ServiceBuilder::new()
                 .layer(HandleErrorLayer::new(|_: BoxError| async move {
@@ -28,6 +27,13 @@ async fn main() {
         .serve(app.into_make_service())
         .await
         .unwrap();
+}
+
+fn make_other_router<B>() -> Router<(), B>
+where
+    B: axum::body::HttpBody + Send + 'static,
+{
+    Router::new().route("/test", post(|| async {}))
 }
 
 async fn root(Json(value): Json<Value>) -> Json<Value> {
