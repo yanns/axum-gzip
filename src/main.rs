@@ -9,14 +9,19 @@ use tower_http::{compression::CompressionLayer, decompression::RequestDecompress
 
 #[tokio::main]
 async fn main() {
-    let app: Router = Router::new().route("/", post(root)).layer(
-        ServiceBuilder::new()
-            .layer(HandleErrorLayer::new(|_: BoxError| async move {
-                (StatusCode::INTERNAL_SERVER_ERROR, "Unhandled server error")
-            }))
-            .layer(RequestDecompressionLayer::new())
-            .layer(CompressionLayer::new()),
-    );
+    let otherRouter: Router = Router::new().route("/test", post(root));
+    let app: Router = Router::new()
+        .route("/", post(root))
+        // uncomment for compilation error
+        // .merge(otherRouter)
+        .layer(
+            ServiceBuilder::new()
+                .layer(HandleErrorLayer::new(|_: BoxError| async move {
+                    (StatusCode::INTERNAL_SERVER_ERROR, "Unhandled server error")
+                }))
+                .layer(RequestDecompressionLayer::new())
+                .layer(CompressionLayer::new()),
+        );
 
     let addr = std::net::SocketAddr::from_str(&format!("{}:{}", "127.0.0.1", 8000)).unwrap();
     axum::Server::bind(&addr)
