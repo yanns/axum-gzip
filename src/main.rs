@@ -22,7 +22,7 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-fn make_other_router() -> Router<()> {
+fn make_other_router() -> Router {
     Router::new().route("/test", post(root))
 }
 
