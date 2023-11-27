@@ -1,8 +1,6 @@
 use std::str::FromStr;
 
-use axum::{
-    error_handling::HandleErrorLayer, http::StatusCode, routing::post, BoxError, Json, Router,
-};
+use axum::{routing::post, Json, Router};
 use serde_json::Value;
 use tower::ServiceBuilder;
 use tower_http::{compression::CompressionLayer, decompression::RequestDecompressionLayer};
@@ -15,26 +13,16 @@ async fn main() {
         .merge(other_router)
         .layer(
             ServiceBuilder::new()
-                .layer(HandleErrorLayer::new(|_: BoxError| async move {
-                    (StatusCode::INTERNAL_SERVER_ERROR, "Unhandled server error")
-                }))
                 .layer(RequestDecompressionLayer::new())
                 .layer(CompressionLayer::new()),
         );
 
     let addr = std::net::SocketAddr::from_str(&format!("{}:{}", "127.0.0.1", 8000)).unwrap();
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }
 
-fn make_other_router<B>() -> Router<(), B>
-where
-    B: axum::body::HttpBody + Send + 'static,
-    B::Data: Send,
-    B::Error: Into<BoxError>,
-{
+fn make_other_router() -> Router<()> {
     Router::new().route("/test", post(root))
 }
 
